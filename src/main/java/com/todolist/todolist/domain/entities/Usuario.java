@@ -1,74 +1,53 @@
 package com.todolist.todolist.domain.entities;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.lang.NonNull;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.util.List;
 
 @Entity
 @Table(name = "usuario")
-@AllArgsConstructor
 @NoArgsConstructor
-@Setter
 @Getter
-public class Usuario implements UserDetails {
+@Setter
+public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @Column(unique = true, nullable = false)
+    @Column(name = "usuario_codigo")
+    private Long codigo;
+
+    @NonNull
+    @Column(name = "usuario_apelido", unique = true)
     private String apelido;
 
-    @Column(nullable = false)
+    @NonNull
+    @Column(name = "usuario_senha")
     private String senha;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
-    }
+    @OneToMany(mappedBy = "usuario")
+    @OrderBy("codigo")
+    private List<Lista> listas = new ArrayList<>();
 
-    @Override
-    public String getPassword() {
-        return senha;
-    }
-
-    @Override
-    public String getUsername() {
-        return apelido;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-       return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
+    public Usuario(String apelido, String senha, List<Lista> listas) {
+        this.apelido = apelido;
+        this.senha = senha;
+        if (listas != null) {
+            this.listas = listas;
+        }
     }
 
 }

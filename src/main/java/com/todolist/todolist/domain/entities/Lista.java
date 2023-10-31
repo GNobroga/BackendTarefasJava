@@ -3,18 +3,24 @@ package com.todolist.todolist.domain.entities;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.hibernate.annotations.SQLSelect;
+import org.springframework.lang.NonNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -41,29 +47,40 @@ public class Lista {
     @Column(name = "data_criacao", nullable = false)
     private LocalDate dataCriacao = LocalDate.now();
 
-    @OneToMany(mappedBy = "lista", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "cod_usuario")
+    private Usuario usuario;
+
+    @Transient
+    @NonNull
+    private Long usuarioId;
+
+    @OneToMany(mappedBy = "lista", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OrderBy("codigo")
     private List<Tarefa> tarefas = new ArrayList<>();
 
-    public Lista(String titulo) {
+    public Lista(String titulo, Usuario usuario) {
         this.titulo = titulo;
+        this.usuario = usuario;
     }
 
-    public void adicionarTarefas(Tarefa ...tarefas) {
-        for (Tarefa tarefa: tarefas) {
-            if (tarefa != null && !this.tarefas.contains(tarefa)) {
-                this.tarefas.add(tarefa);
-                tarefa.setLista(this);
-            }
-        }
+    public long getFeitas() {
+        return tarefas.stream()
+            .filter(t -> t.isFeito())
+            .count();
     }
 
-    public void setTarefas(List<Tarefa> tarefas) {
-        if (tarefas == null) {
-            this.tarefas = new ArrayList<>();
-        } else {
-            this.tarefas = tarefas;
-        }
+    public long getNaoFeitas() {
+        return tarefas.stream()
+            .filter(t -> !t.isFeito())
+            .count();
     }
 
+     public long getVencidas() {
+        return tarefas.stream()
+            .filter(t -> t.getExpirou())
+            .count();
+    }
 
 }

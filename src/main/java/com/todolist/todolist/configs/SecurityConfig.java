@@ -22,23 +22,18 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.todolist.todolist.domain.entities.Lista;
-import com.todolist.todolist.domain.entities.Tarefa;
+
 import com.todolist.todolist.domain.filters.UsuarioAutenticacaoFiltro;
 import com.todolist.todolist.domain.filters.UsuarioAutorizacaoFiltro;
 import com.todolist.todolist.domain.utils.JwtUtils;
-import com.todolist.todolist.repositories.ApiRepository;
-import com.todolist.todolist.repositories.TaskRepository;
+import com.todolist.todolist.repositories.ListaRepository; 
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig implements WebMvcConfigurer, CommandLineRunner {
+public class SecurityConfig implements WebMvcConfigurer {
 
     @Autowired
-    private ApiRepository listaRepository;
-
-    @Autowired
-    private TaskRepository taskRepository;
+    private ListaRepository listaRepository;
 
     @Autowired
     private AuthenticationConfiguration config;
@@ -58,7 +53,7 @@ public class SecurityConfig implements WebMvcConfigurer, CommandLineRunner {
             .authorizeHttpRequests()
                 .requestMatchers(HttpMethod.GET, "/login", "/login/")
                 .permitAll()
-                .requestMatchers(HttpMethod.POST, "/login", "/login/", "/login/**", "/cadastro")
+                .requestMatchers(HttpMethod.POST, "/login", "/login/**", "/usuarios")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
@@ -85,26 +80,4 @@ public class SecurityConfig implements WebMvcConfigurer, CommandLineRunner {
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "TRACE", "CONNECT")
             .allowedOrigins("*");
 	}
-
-    @Override 
-    public void run(String ...args) {
-        final int QUANTIDADE = 100;
-        List<Lista> listas = new ArrayList<>();
-        List<Tarefa> tarefas = new ArrayList<>();
-
-        for (int i = 1 ; i <= QUANTIDADE ; i++) {
-            listas.add(new Lista("Lista " + i));
-        }
-
-        // for (int i = 1 ; i <= QUANTIDADE ; i++) {
-
-        //     for (int j = 1 ; j <= QUANTIDADE ; j++) {
-        //         tarefas.add(new Tarefa("Tarefa " + j , "Fazer " + j,  LocalDate.now().plusDays(3), listas.get(i - 1)));    
-        //     }
-        // }
-
-        listaRepository.saveAll(listas);
-        // taskRepository.saveAll(tarefas);
-    }
-
 }

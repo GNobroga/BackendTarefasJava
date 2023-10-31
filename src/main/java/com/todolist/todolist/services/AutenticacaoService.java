@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.todolist.todolist.domain.entities.Usuario;
+import com.todolist.todolist.domain.entities.auth.UsuarioAuth;
 import com.todolist.todolist.repositories.UsuarioRepository;
 
 @Service
@@ -16,12 +17,11 @@ public class AutenticacaoService implements UserDetailsService {
     private UsuarioRepository usuarioRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByUsuario(username);    
+    public UserDetails loadUserByUsername(String apelido) throws UsernameNotFoundException {
+        Usuario usuario = usuarioRepository.findByApelido(apelido);
         if (usuario == null) {
             throw new UsernameNotFoundException("Usuario nao encontrado");
         }
-
-        return usuario;
+        return new UsuarioAuth(usuario.getCodigo(), usuario.getApelido(), usuario.getSenha());  
     }
 }

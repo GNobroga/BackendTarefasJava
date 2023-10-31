@@ -13,6 +13,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.todolist.todolist.domain.entities.Usuario;
+import com.todolist.todolist.domain.entities.auth.UsuarioAuth;
 import com.todolist.todolist.domain.entities.dtos.UsuarioDTO;
 import com.todolist.todolist.domain.utils.JwtUtils;
 
@@ -37,7 +38,7 @@ public class UsuarioAutenticacaoFiltro extends UsernamePasswordAuthenticationFil
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
 		try {
 			UsuarioDTO dto = new ObjectMapper().readValue(request.getInputStream(), UsuarioDTO.class);
-			UsernamePasswordAuthenticationToken authenticationToken = 
+            UsernamePasswordAuthenticationToken authenticationToken = 
 					new UsernamePasswordAuthenticationToken(dto.apelido(), dto.senha());
 			return authenticationManager.authenticate(authenticationToken);
 		} catch (Exception e) {
@@ -51,7 +52,7 @@ public class UsuarioAutenticacaoFiltro extends UsernamePasswordAuthenticationFil
                                             FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
                                             
-		Usuario user = ((Usuario) auth.getPrincipal());
+		UsuarioAuth user = ((UsuarioAuth) auth.getPrincipal());
 		String token = jwtUtils.generateToken(user);
 
 		res.setHeader("Access-Control-Allow-Origin", "*");
@@ -68,7 +69,6 @@ public class UsuarioAutenticacaoFiltro extends UsernamePasswordAuthenticationFil
 			AuthenticationException failed) throws IOException, ServletException {
 		response.setStatus(401);
 		response.setContentType("application/json");
-		System.out.println("Entrouu");
 		response.getWriter().append(json());
 	}
 

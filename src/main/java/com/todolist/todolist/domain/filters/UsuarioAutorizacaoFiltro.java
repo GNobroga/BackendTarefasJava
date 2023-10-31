@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.todolist.todolist.domain.entities.Usuario;
+import com.todolist.todolist.domain.entities.auth.UsuarioAuth;
 import com.todolist.todolist.domain.utils.JwtUtils;
 import com.todolist.todolist.repositories.UsuarioRepository;
 
@@ -34,10 +35,13 @@ public class UsuarioAutorizacaoFiltro extends OncePerRequestFilter {
         if (authorization != null && authorization.startsWith("Bearer ")) {
             String token = authorization.replace("Bearer ", "");
             String apelido = jwtUtils.getSubject(token);
-            Usuario usuario = repository.findByUsuario(apelido);
-            var encapsulado = new UsernamePasswordAuthenticationToken(apelido, usuario, usuario.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(encapsulado);
+            Usuario usuario = repository.findByApelido(apelido);
 
+            if (usuario != null) {
+                UsuarioAuth usuarioAuth = new UsuarioAuth(usuario.getCodigo(), usuario.getApelido(), usuario.getSenha());
+                var encapsulado = new UsernamePasswordAuthenticationToken(apelido, usuario, usuarioAuth.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(encapsulado);
+            }
         }
 
         filterChain.doFilter(request, response);

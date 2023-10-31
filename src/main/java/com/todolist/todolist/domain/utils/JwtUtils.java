@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.todolist.todolist.domain.entities.Usuario;
+import com.todolist.todolist.domain.entities.auth.UsuarioAuth;
 
 @Component
 public class JwtUtils {
@@ -19,11 +19,11 @@ public class JwtUtils {
     @Value("${jwt.expires}")
     private Long minutes;
     
-    public String generateToken(Usuario usuario) {
+    public String generateToken(UsuarioAuth usuario) {
         return JWT
             .create()
+            .withClaim("id", usuario.getCodigo())
             .withSubject(usuario.getApelido())
-            .withClaim("id", usuario.getId())
             .withExpiresAt(LocalDateTime.now().plusMinutes(minutes).toInstant(ZoneOffset.of("-03:00")))
             .sign(Algorithm.HMAC256(secret));
     }

@@ -9,6 +9,5 @@ import com.todolist.todolist.domain.entities.Usuario;
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     @Query("SELECT u FROM Usuario u WHERE u.apelido = :apelido")
-    Usuario findByUsuario(@Param("apelido") String apelido);
-
+    Usuario findByApelido(@Param("apelido") String apelido);
 }

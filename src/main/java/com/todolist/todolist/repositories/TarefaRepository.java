@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.todolist.todolist.domain.entities.Tarefa;
 
 @Repository
-public interface TaskRepository extends JpaRepository<Tarefa, Long> {
+public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
     
 }
