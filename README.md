@@ -1,6 +1,6 @@
 # Backend Tarefas
 
-Backend para atender um cliente em Angular ou qualquer outro consumidor.
+Backend simples para atender o projeto <a href="https://github.com/GNobroga/FrontendTarefasAngular">FrontendTarefas</a>
 
 ## Tecnologias 
 
